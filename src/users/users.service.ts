@@ -1,32 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/user.dto';
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  role?: 'user' | 'admin';
-};
+import { PrismaService } from '../prisma/prisma.service';
+import { Prisma, User } from '../generated/prisma/client';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
+  constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateUserDto): Promise<User> {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const newUser: User = {
-      id: uuidv4(),
-      ...dto,
+
+    const data: Prisma.UserCreateInput = {
+      name: dto.name,
+      email: dto.email,
       password: hashedPassword,
+      role: dto.role,
     };
-    this.users.push(newUser);
-    return newUser;
+
+    return this.prisma.user.create({ data });
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
-    return this.users.find((u) => u.email === email);
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    return user ?? undefined;
   }
 }

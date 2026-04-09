@@ -1,75 +1,56 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { v4 as uuidv4 } from 'uuid';
-
-type Product = CreateProductDto & { id: string };
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { Product, Prisma } from '../generated/prisma/client';
 
 @Injectable()
 export class ProductService {
-  private products: Product[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  // Create
-  createProduct(data: CreateProductDto) {
-    const newProduct = {
-      id: uuidv4(),
-      ...data,
-    };
-
-    this.products.push(newProduct);
-
-    return {
-      message: 'Product created successfully',
-      data: newProduct,
-    };
+  async product(
+    productWhereUniqueInput: Prisma.ProductWhereUniqueInput,
+  ): Promise<Product | null> {
+    return this.prisma.product.findUnique({
+      where: productWhereUniqueInput,
+    });
   }
 
-  // Get All
-  getAllProducts() {
-    return this.products;
+  async products(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.ProductWhereUniqueInput;
+    where?: Prisma.ProductWhereInput;
+    orderBy?: Prisma.ProductOrderByWithRelationInput;
+  }): Promise<Product[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.product.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
   }
 
-  // Get One
-  findOne(id: string) {
-    const product = this.products.find((p) => p.id === id);
-
-    if (!product) {
-      throw new NotFoundException('Product not found');
-    }
-
-    return product;
+  async createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
+    return this.prisma.product.create({
+      data,
+    });
   }
 
-  // Update
-  update(id: string, updateProductDto: UpdateProductDto) {
-    const index = this.products.findIndex((p) => p.id === id);
-
-    if (index === -1) {
-      throw new NotFoundException('Product not found');
-    }
-
-    this.products[index] = {
-      ...this.products[index],
-      ...updateProductDto,
-    };
-
-    return this.products[index];
+  async updateProduct(params: {
+    where: Prisma.ProductWhereUniqueInput;
+    data: Prisma.ProductUpdateInput;
+  }): Promise<Product> {
+    const { data, where } = params;
+    return this.prisma.product.update({
+      data,
+      where,
+    });
   }
 
-  // Delete
-  remove(id: string) {
-    const index = this.products.findIndex((p) => p.id === id);
-
-    if (index === -1) {
-      throw new NotFoundException('Product not found');
-    }
-
-    const deletedProduct = this.products[index];
-    this.products.splice(index, 1);
-
-    return {
-      message: 'Product deleted successfully',
-      data: deletedProduct,
-    };
+  async deleteProduct(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
+    return this.prisma.product.delete({
+      where,
+    });
   }
 }

@@ -5,12 +5,14 @@ import { AppService } from './app.service';
 import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
     ProductModule,
     AuthModule,
     UsersModule,
+    PrismaModule,
     JwtModule.register({
       global: true,
       secret: 'your-secret-key',
