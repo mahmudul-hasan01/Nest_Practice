@@ -33,8 +33,16 @@ export class AuthService {
       email: user.email,
       role: user.role,
     };
+
+    const access_token = await this.jwtService.signAsync(payload);
+
+    // const refresh_token = await this.jwtService.signAsync(payload, {
+    //   expiresIn: '30d',
+    // });
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token,
+      // refresh_token,
     };
   }
 }

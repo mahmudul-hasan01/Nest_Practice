@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     JwtModule.register({
       global: true,
-      secret: 'your-secret-key',
+      secret: process.env.JWT_ACCESS_SECRET,
       signOptions: { expiresIn: '1d' },
     }),
   ],

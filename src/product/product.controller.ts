@@ -20,6 +20,8 @@ export class ProductController {
     return this.productService.createProduct(createProductDto);
   }
 
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles('admin')
   @Get()
   findAll() {
     return this.productService.products({});
