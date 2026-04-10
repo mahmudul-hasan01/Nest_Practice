@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -13,6 +15,10 @@ import { JwtModule } from '@nestjs/jwt';
     AuthModule,
     UsersModule,
     PrismaModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_ACCESS_SECRET,
