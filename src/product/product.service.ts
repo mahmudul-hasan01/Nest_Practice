@@ -6,11 +6,9 @@ import { Product, Prisma } from '../generated/prisma/client';
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
-  async product(
-    productWhereUniqueInput: Prisma.ProductWhereUniqueInput,
-  ): Promise<Product | null> {
-    return this.prisma.product.findUnique({
-      where: productWhereUniqueInput,
+  async createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
+    return this.prisma.product.create({
+      data,
     });
   }
 
@@ -31,9 +29,11 @@ export class ProductService {
     });
   }
 
-  async createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
-    return this.prisma.product.create({
-      data,
+  async product(
+    productWhereUniqueInput: Prisma.ProductWhereUniqueInput,
+  ): Promise<Product | null> {
+    return this.prisma.product.findUnique({
+      where: productWhereUniqueInput,
     });
   }
 
